@@ -3,56 +3,115 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Important Question</title>
+  <title>Important Question 💖</title>
+
   <style>
     body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin-top: 80px;
-      padding: 20px;
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Arial", sans-serif;
+      background: linear-gradient(135deg, #ffd6e8, #fff1f7);
+      overflow: hidden;
     }
+
+    /* Floating emojis */
+    .floating {
+      position: absolute;
+      font-size: 30px;
+      animation: float 12s linear infinite;
+      opacity: 0.7;
+    }
+
+    @keyframes float {
+      from {
+        transform: translateY(100vh) rotate(0deg);
+      }
+      to {
+        transform: translateY(-10vh) rotate(360deg);
+      }
+    }
+
+    /* Center card */
+    .card {
+      position: relative;
+      max-width: 360px;
+      margin: 120px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+      z-index: 10;
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
     button {
       padding: 14px 22px;
       font-size: 16px;
       margin: 12px;
       border: none;
-      border-radius: 10px;
+      border-radius: 12px;
       cursor: pointer;
     }
-    #yesBtn { background: #ff4d6d; color: white; }
-    #noBtn  { background: #ddd; color: #222; position: absolute; }
+
+    #yesBtn {
+      background: #ff4d6d;
+      color: white;
+    }
+
+    #noBtn {
+      background: #ddd;
+      color: #222;
+      position: absolute;
+    }
   </style>
 </head>
+
 <body>
 
-  <h2>Quick Question 💭</h2>
-  <p>Will you be my Valentine? 💌</p>
+  <!-- Floating cats & teddy bears -->
+  <div class="floating" style="left:10%; animation-delay:0s;">🐱</div>
+  <div class="floating" style="left:25%; animation-delay:2s;">🧸</div>
+  <div class="floating" style="left:40%; animation-delay:4s;">🐱</div>
+  <div class="floating" style="left:60%; animation-delay:1s;">🧸</div>
+  <div class="floating" style="left:75%; animation-delay:3s;">🐱</div>
+  <div class="floating" style="left:90%; animation-delay:5s;">🧸</div>
 
-  <button id="yesBtn" onclick="yesClicked()">Yes 💖</button>
-  <button id="noBtn" onmouseover="moveNo()">No 🙃</button>
+  <!-- Main card -->
+  <div class="card">
+    <h2>Quick Question 💭</h2>
+    <p>Will you be my Valentine? 💌</p>
+
+    <button id="yesBtn" onclick="yesClicked()">Yes 💖</button>
+    <button id="noBtn" onclick="moveNo()">No 🙃</button>
+  </div>
 
   <script>
     function yesClicked() {
-      document.body.innerHTML = `
+      document.querySelector(".card").innerHTML = `
         <h1>🎉 Yay!</h1>
-        <p>Okay this made my day 😊</p>
+        <p>This just got very cute 🥹</p>
         <p>Happy Valentine’s 💐</p>
       `;
     }
 
     function moveNo() {
       const btn = document.getElementById('noBtn');
-      const maxX = window.innerWidth - btn.offsetWidth;
-      const maxY = window.innerHeight - btn.offsetHeight;
+      const maxX = window.innerWidth - btn.offsetWidth - 20;
+      const maxY = window.innerHeight - btn.offsetHeight - 20;
 
-      btn.style.left = Math.floor(Math.random() * maxX) + "px";
-      btn.style.top  = Math.floor(Math.random() * maxY) + "px";
+      btn.style.left = Math.random() * maxX + "px";
+      btn.style.top  = Math.random() * maxY + "px";
     }
 
+    // Initial position for "No"
     window.onload = () => {
       const btn = document.getElementById('noBtn');
       btn.style.left = "55%";
-      btn.style.top = "260px";
+      btn.style.top = "360px";
     };
   </script>
 
