@@ -2,114 +2,147 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>Quick Question 💖</title>
 
   <style>
+    /* ===== Base layout ===== */
     body {
       margin: 0;
       min-height: 100vh;
       font-family: Arial, sans-serif;
       background: linear-gradient(135deg, #ffe0ec, #fff5f9);
       overflow: hidden;
+      -webkit-tap-highlight-color: transparent; /* remove mobile tap flash */
     }
 
-    /* Floating background elements */
+    .stage {
+      position: relative;
+      min-height: 100vh;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    /* ===== Floating decor ===== */
     .floating {
       position: absolute;
-      font-size: 32px;
-      animation: float 16s linear infinite;
-      opacity: 0.7;
       pointer-events: none;
+      opacity: 0.75;
+      animation-name: floatUp;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+      will-change: transform;
     }
 
-    @keyframes float {
-      from {
-        transform: translateY(100vh) rotate(0deg);
-      }
-      to {
-        transform: translateY(-10vh) rotate(360deg);
-      }
+    @keyframes floatUp {
+      from { transform: translateY(110vh) rotate(0deg); }
+      to   { transform: translateY(-15vh) rotate(360deg); }
     }
 
-    /* Card */
+    /* ===== Card ===== */
     .card {
       position: relative;
-      max-width: 420px;
-      margin: 120px auto;
+      width: min(520px, 92vw);
       background: white;
-      padding: 36px 30px 44px; /* reduced bottom padding */
+      padding: 38px 28px 34px;
       border-radius: 26px;
       text-align: center;
       box-shadow: 0 18px 45px rgba(0, 0, 0, 0.15);
-      z-index: 10;
+      z-index: 5;
     }
 
     h2 {
-      margin-top: 0;
-      margin-bottom: 8px;
+      margin: 0 0 8px;
+      font-size: 30px;
     }
 
     p {
-      margin-bottom: 16px; /* 🔑 bring buttons closer */
+      margin: 0 0 16px;
       font-size: 16px;
     }
 
-    /* Button row */
+    /* ===== Button area ===== */
     .button-row {
       position: relative;
       width: 100%;
-      height: 60px; /* tighter height */
-      margin-top: 0; /* 🔑 remove extra gap */
+      height: 68px; /* a bit taller for mobile taps */
     }
 
     button {
-      padding: 14px 28px;
+      position: absolute;
+      top: 0;
+      padding: 14px 26px;
       font-size: 16px;
+      font-weight: 600;
       border: none;
       border-radius: 14px;
       cursor: pointer;
-      font-weight: 600;
-      position: absolute;
-      top: 0;
+      white-space: nowrap;
+      touch-action: manipulation; /* mobile tap optimization */
     }
 
     #yesBtn {
+      left: 0;
       background: #ff4d6d;
       color: white;
-      left: 0;
     }
 
     #noBtn {
+      right: 0;
+      left: auto;
       background: #ff8fa3;
       color: white;
-      right: 0;
+    }
+
+    /* ===== Mobile fine-tuning ===== */
+    @media (max-width: 420px) {
+      h2 { font-size: 26px; }
+      p  { font-size: 15px; }
+      button { padding: 14px 22px; }
     }
   </style>
 </head>
 
 <body>
+  <div class="stage" id="stage">
 
-  <!-- Floating decor -->
-  <div class="floating" style="left:8%; animation-delay:0s;">🌸</div>
-  <div class="floating" style="left:22%; animation-delay:2s;">🐱</div>
-  <div class="floating" style="left:38%; animation-delay:4s;">🧸</div>
-  <div class="floating" style="left:55%; animation-delay:1s;">🌼</div>
-  <div class="floating" style="left:70%; animation-delay:3s;">🐱</div>
-  <div class="floating" style="left:85%; animation-delay:5s;">🧸</div>
+    <div class="card" id="card">
+      <h2>Quick Question 💭</h2>
+      <p>Will you be my Valentine? 💌</p>
 
-  <!-- Main card -->
-  <div class="card" id="card">
-    <h2>Quick Question 💭</h2>
-    <p>Will you be my Valentine? 💌</p>
-
-    <div class="button-row" id="buttonRow">
-      <button id="yesBtn" onclick="yesClicked()">Yes 💖</button>
-      <button id="noBtn" onclick="moveNo()">No 😳</button>
+      <div class="button-row" id="buttonRow">
+        <button id="yesBtn" onclick="yesClicked()">Yes 💖</button>
+        <button id="noBtn" onclick="moveNo()">No 😳</button>
+      </div>
     </div>
   </div>
 
   <script>
+    /* ===== Floating decor generator (more + faster) ===== */
+    (function generateFloaters() {
+      const stage = document.getElementById("stage");
+      const icons = ["🌸", "🌼", "💐", "🐱", "🧸", "💖"];
+      const count = 20; // plenty, looks lively but not chaotic
+
+      for (let i = 0; i < count; i++) {
+        const el = document.createElement("div");
+        el.className = "floating";
+        el.textContent = icons[Math.floor(Math.random() * icons.length)];
+
+        el.style.left = Math.random() * 96 + "%";
+        el.style.fontSize = 30 + Math.random() * 12 + "px";
+        el.style.animationDuration = 8 + Math.random() * 4 + "s";
+        el.style.animationDelay = Math.random() * 6 + "s";
+
+        stage.appendChild(el);
+      }
+    })();
+
+    /* ===== Button logic ===== */
     let chaosStarted = false;
 
     function yesClicked() {
@@ -127,31 +160,41 @@
 
       if (!chaosStarted) {
         chaosStarted = true;
-        noBtn.style.position = "absolute";
+        noBtn.style.right = "auto"; // prevent expansion bug
       }
 
       const rowRect = row.getBoundingClientRect();
       const noRect = noBtn.getBoundingClientRect();
       const yesRect = yesBtn.getBoundingClientRect();
 
-      let x, y, overlap;
+      const yesBox = {
+        x: yesRect.left - rowRect.left,
+        y: yesRect.top - rowRect.top,
+        w: yesRect.width,
+        h: yesRect.height
+      };
+
+      const maxX = rowRect.width - noRect.width;
+      const maxY = rowRect.height - noRect.height;
+
+      let x, y, overlap, tries = 0;
 
       do {
-        x = Math.random() * (rowRect.width - noRect.width);
-        y = Math.random() * (rowRect.height - noRect.height);
+        x = Math.random() * maxX;
+        y = Math.random() * maxY;
 
         overlap =
-          x < (yesRect.left - rowRect.left + yesRect.width) &&
-          x + noRect.width > (yesRect.left - rowRect.left) &&
-          y < yesRect.height &&
-          y + noRect.height > 0;
+          x < yesBox.x + yesBox.w &&
+          x + noRect.width > yesBox.x &&
+          y < yesBox.y + yesBox.h &&
+          y + noRect.height > yesBox.y;
 
-      } while (overlap);
+        tries++;
+      } while (overlap && tries < 40);
 
       noBtn.style.left = x + "px";
-      noBtn.style.top = y + "px";
+      noBtn.style.top  = y + "px";
     }
   </script>
-
 </body>
 </html>
