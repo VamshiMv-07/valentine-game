@@ -14,10 +14,10 @@
       overflow: hidden;
     }
 
-    /* Floating background */
+    /* Floating background elements */
     .floating {
       position: absolute;
-      font-size: 34px;
+      font-size: 32px;
       animation: float 16s linear infinite;
       opacity: 0.7;
       pointer-events: none;
@@ -38,7 +38,7 @@
       max-width: 420px;
       margin: 120px auto;
       background: white;
-      padding: 40px 30px 60px;
+      padding: 36px 30px 44px; /* reduced bottom padding */
       border-radius: 26px;
       text-align: center;
       box-shadow: 0 18px 45px rgba(0, 0, 0, 0.15);
@@ -46,11 +46,12 @@
     }
 
     h2 {
-      margin: 0 0 10px;
+      margin-top: 0;
+      margin-bottom: 8px;
     }
 
     p {
-      margin-bottom: 30px;
+      margin-bottom: 16px; /* 🔑 bring buttons closer */
       font-size: 16px;
     }
 
@@ -58,8 +59,8 @@
     .button-row {
       position: relative;
       width: 100%;
-      height: 60px;
-      margin-top: 10px;
+      height: 60px; /* tighter height */
+      margin-top: 0; /* 🔑 remove extra gap */
     }
 
     button {
@@ -69,40 +70,35 @@
       border-radius: 14px;
       cursor: pointer;
       font-weight: 600;
+      position: absolute;
+      top: 0;
     }
 
-    /* YES — fixed left */
     #yesBtn {
       background: #ff4d6d;
       color: white;
-      position: absolute;
       left: 0;
-      top: 0;
     }
 
-    /* NO — fixed right initially */
     #noBtn {
       background: #ff8fa3;
       color: white;
-      position: absolute;
       right: 0;
-      top: 0;
     }
   </style>
 </head>
 
 <body>
 
-  <!-- Floating florals + cats + bears -->
-  <div class="floating" style="left:5%; animation-delay:0s;">🌸</div>
-  <div class="floating" style="left:18%; animation-delay:2s;">🐱</div>
-  <div class="floating" style="left:32%; animation-delay:4s;">🧸</div>
-  <div class="floating" style="left:50%; animation-delay:1s;">🌼</div>
-  <div class="floating" style="left:65%; animation-delay:3s;">🐱</div>
-  <div class="floating" style="left:78%; animation-delay:5s;">🧸</div>
-  <div class="floating" style="left:90%; animation-delay:2s;">💐</div>
+  <!-- Floating decor -->
+  <div class="floating" style="left:8%; animation-delay:0s;">🌸</div>
+  <div class="floating" style="left:22%; animation-delay:2s;">🐱</div>
+  <div class="floating" style="left:38%; animation-delay:4s;">🧸</div>
+  <div class="floating" style="left:55%; animation-delay:1s;">🌼</div>
+  <div class="floating" style="left:70%; animation-delay:3s;">🐱</div>
+  <div class="floating" style="left:85%; animation-delay:5s;">🧸</div>
 
-  <!-- Card -->
+  <!-- Main card -->
   <div class="card" id="card">
     <h2>Quick Question 💭</h2>
     <p>Will you be my Valentine? 💌</p>
@@ -113,4 +109,49 @@
     </div>
   </div>
 
-  <scri
+  <script>
+    let chaosStarted = false;
+
+    function yesClicked() {
+      document.getElementById("card").innerHTML = `
+        <h1>🎉 Yay!</h1>
+        <p>This just got very cute 😊</p>
+        <p>Happy Valentine’s 💐</p>
+      `;
+    }
+
+    function moveNo() {
+      const noBtn = document.getElementById("noBtn");
+      const yesBtn = document.getElementById("yesBtn");
+      const row = document.getElementById("buttonRow");
+
+      if (!chaosStarted) {
+        chaosStarted = true;
+        noBtn.style.position = "absolute";
+      }
+
+      const rowRect = row.getBoundingClientRect();
+      const noRect = noBtn.getBoundingClientRect();
+      const yesRect = yesBtn.getBoundingClientRect();
+
+      let x, y, overlap;
+
+      do {
+        x = Math.random() * (rowRect.width - noRect.width);
+        y = Math.random() * (rowRect.height - noRect.height);
+
+        overlap =
+          x < (yesRect.left - rowRect.left + yesRect.width) &&
+          x + noRect.width > (yesRect.left - rowRect.left) &&
+          y < yesRect.height &&
+          y + noRect.height > 0;
+
+      } while (overlap);
+
+      noBtn.style.left = x + "px";
+      noBtn.style.top = y + "px";
+    }
+  </script>
+
+</body>
+</html>
