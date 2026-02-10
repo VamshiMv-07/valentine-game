@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Important Question</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 80px;
+      padding: 20px;
+    }
+    button {
+      padding: 14px 22px;
+      font-size: 16px;
+      margin: 12px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    #yesBtn { background: #ff4d6d; color: white; }
+    #noBtn  { background: #ddd; color: #222; position: absolute; }
+  </style>
+</head>
+<body>
+
+  <h2>Quick Question 💭</h2>
+  <p>Will you be my Valentine? 💌</p>
+
+  <button id="yesBtn" onclick="yesClicked()">Yes 💖</button>
+  <button id="noBtn" onmouseover="moveNo()">No 🙃</button>
+
+  <script>
+    function yesClicked() {
+      document.body.innerHTML = `
+        <h1>🎉 Yay!</h1>
+        <p>Okay this made my day 😊</p>
+        <p>Happy Valentine’s 💐</p>
+      `;
+    }
+
+    function moveNo() {
+      const btn = document.getElementById('noBtn');
+      const maxX = window.innerWidth - btn.offsetWidth;
+      const maxY = window.innerHeight - btn.offsetHeight;
+
+      btn.style.left = Math.floor(Math.random() * maxX) + "px";
+      btn.style.top  = Math.floor(Math.random() * maxY) + "px";
+    }
+
+    window.onload = () => {
+      const btn = document.getElementById('noBtn');
+      btn.style.left = "55%";
+      btn.style.top = "260px";
+    };
+  </script>
+
+</body>
+</html>
