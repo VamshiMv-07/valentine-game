@@ -130,6 +130,15 @@
   </div>
 </div>
 
+<!-- 🎵 AUDIO FILES -->
+<audio id="musicEn" loop>
+  <source src="hiphop.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="musicTr" loop>
+  <source src="turkey.mp3" type="audio/mpeg">
+</audio>
+
 <script>
   const translations = {
     en: {
@@ -152,12 +161,27 @@
     }
   };
 
+  const musicEn = document.getElementById("musicEn");
+  const musicTr = document.getElementById("musicTr");
+
+  function stopAllMusic() {
+    [musicEn, musicTr].forEach(m => {
+      m.pause();
+      m.currentTime = 0;
+      m.volume = 0.25;
+    });
+  }
+
   let currentLang = "en";
   let chaosStarted = false;
   let cornerIndex = 0;
 
   function setLanguage(lang) {
     currentLang = lang;
+
+    stopAllMusic();
+    const selectedMusic = lang === "en" ? musicEn : musicTr;
+    selectedMusic.play().catch(() => {});
 
     languageScreen.style.display = "none";
     valentineScreen.style.display = "block";
@@ -181,6 +205,7 @@
   }
 
   function goBack() {
+    stopAllMusic();
     chaosStarted = false;
     cornerIndex = 0;
 
