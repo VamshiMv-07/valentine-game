@@ -22,6 +22,7 @@
       align-items: center;
       justify-content: center;
       padding: 20px;
+      position: relative;
     }
 
     /* Floating decor */
@@ -30,6 +31,7 @@
       pointer-events: none;
       opacity: 0.75;
       animation: floatUp linear infinite;
+      will-change: transform;
     }
 
     @keyframes floatUp {
@@ -96,7 +98,6 @@
 
 <body>
   <div class="stage" id="stage">
-
     <div class="card" id="card">
       <h2>Quick Question 💭</h2>
       <p>Will you be my Valentine? 💌</p>
@@ -109,10 +110,16 @@
   </div>
 
   <script>
+    /* ===== Run setup ONLY after DOM is ready ===== */
+    document.addEventListener("DOMContentLoaded", () => {
+      createDecor();
+    });
+
     /* Background decor */
-    (function createDecor() {
+    function createDecor() {
       const stage = document.getElementById("stage");
       const icons = ["🌸", "🌼", "💐", "🐱", "🧸", "💖"];
+
       for (let i = 0; i < 24; i++) {
         const d = document.createElement("div");
         d.className = "floating";
@@ -123,7 +130,7 @@
         d.style.animationDelay = Math.random() * 6 + "s";
         stage.appendChild(d);
       }
-    })();
+    }
 
     /* YES */
     function yesClicked() {
@@ -135,13 +142,6 @@
     }
 
     /* NO movement logic */
-    const corners = [
-      { x: 10,  y: 10 },   // top-left
-      { x: 330, y: 10 },   // top-right
-      { x: 10,  y: 70 },   // bottom-left
-      { x: 330, y: 70 }    // bottom-right
-    ];
-
     let cornerIndex = 0;
     let chaosStarted = false;
 
@@ -151,13 +151,16 @@
 
       if (!chaosStarted) {
         chaosStarted = true;
-        noBtn.style.position = "absolute";
+
+        /* 🔑 Delay layout mutation to next frame */
+        requestAnimationFrame(() => {
+          noBtn.style.position = "absolute";
+        });
       }
 
       const areaRect = area.getBoundingClientRect();
       const btnRect = noBtn.getBoundingClientRect();
 
-      // Calculate corner relative positions
       const positions = [
         { left: 10, top: 10 },
         { left: areaRect.width - btnRect.width - 10, top: 10 },
@@ -166,6 +169,7 @@
       ];
 
       cornerIndex = (cornerIndex + 1) % positions.length;
+
       noBtn.style.left = positions[cornerIndex].left + "px";
       noBtn.style.top  = positions[cornerIndex].top  + "px";
     }
