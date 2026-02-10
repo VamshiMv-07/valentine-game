@@ -83,6 +83,10 @@
     }
 
     /* Language buttons */
+    .lang-btn {
+  background: #ff6b81;   /* same highlight for both */
+  color: white;
+}
     .lang-buttons {
       display: flex;
       justify-content: center;
@@ -119,11 +123,10 @@
     <div class="card" id="languageScreen">
       <h2>Choose your language 🌍</h2>
 
-      <div class="lang-buttons">
-        <button class="btn primary" onclick="setLanguage('en')">English</button>
-        <button class="btn secondary" onclick="setLanguage('tr')">Türkçe</button>
-      </div>
-    </div>
+     <div class="lang-buttons">
+  <button class="btn lang-btn" onclick="setLanguage('en')">English</button>
+  <button class="btn lang-btn" onclick="setLanguage('tr')">Türkçe</button>
+</div>
 
     <!-- Valentine Screen -->
     <div class="card" id="valentineScreen" style="display:none;">
