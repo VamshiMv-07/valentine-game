@@ -51,7 +51,7 @@
     }
 
     h2 {
-      margin: 0 0 10px;
+      margin: 0 0 20px;
       font-size: 30px;
     }
 
@@ -60,16 +60,8 @@
       font-size: 16px;
     }
 
-    .button-area {
-      position: relative;
-      height: 120px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 40px;
-    }
-
-    button {
+    /* Buttons */
+    .btn {
       padding: 14px 28px;
       font-size: 16px;
       font-weight: 600;
@@ -90,12 +82,32 @@
       color: white;
     }
 
-    /* Language selector */
+    /* Language buttons */
     .lang-buttons {
       display: flex;
       justify-content: center;
       gap: 20px;
-      margin-top: 20px;
+    }
+
+    /* Valentine buttons area */
+    .button-area {
+      position: relative;
+      height: 120px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 40px;
+    }
+
+    /* Change language link */
+    .change-lang {
+      position: absolute;
+      top: 14px;
+      right: 18px;
+      font-size: 13px;
+      color: #ff4d6d;
+      cursor: pointer;
+      text-decoration: underline;
     }
   </style>
 </head>
@@ -106,22 +118,23 @@
     <!-- Language Selection -->
     <div class="card" id="languageScreen">
       <h2>Choose your language 🌍</h2>
-      <p>Dilinizi seçin</p>
 
       <div class="lang-buttons">
-        <button class="primary" onclick="setLanguage('en')">English 🇬🇧</button>
-        <button class="secondary" onclick="setLanguage('tr')">Türkçe 🇹🇷</button>
+        <button class="btn primary" onclick="setLanguage('en')">English</button>
+        <button class="btn secondary" onclick="setLanguage('tr')">Türkçe</button>
       </div>
     </div>
 
-    <!-- Valentine Screen (hidden initially) -->
+    <!-- Valentine Screen -->
     <div class="card" id="valentineScreen" style="display:none;">
+      <div class="change-lang" onclick="goBack()">🌍 Change language</div>
+
       <h2 id="titleText"></h2>
       <p id="questionText"></p>
 
       <div class="button-area" id="buttonArea">
-        <button id="yesBtn" class="primary" onclick="yesClicked()"></button>
-        <button id="noBtn" class="secondary" onclick="moveNo()"></button>
+        <button id="yesBtn" class="btn primary" onclick="yesClicked()"></button>
+        <button id="noBtn" class="btn secondary" onclick="moveNo()"></button>
       </div>
     </div>
   </div>
@@ -136,7 +149,7 @@
         no: "No 😳",
         successTitle: "🎉 Yay!",
         successLine1: "This just got very cute 😊",
-        successLine2: "Happy Valentine’s 💐"
+        successLine2: "Happy Valentine’s 🌸"
       },
       tr: {
         title: "Küçük bir soru 💭",
@@ -145,7 +158,7 @@
         no: "Hayır 😳",
         successTitle: "🎉 Yaşasın!",
         successLine1: "Bu gerçekten çok tatlı oldu 😊",
-        successLine2: "Mutlu Sevgililer Günü 💐"
+        successLine2: "Mutlu Sevgililer Günü 🌸"
       }
     };
 
@@ -165,8 +178,22 @@
       document.getElementById("noBtn").innerText = translations[lang].no;
     }
 
+    function goBack() {
+      chaosStarted = false;
+      cornerIndex = 0;
+
+      document.getElementById("valentineScreen").style.display = "none";
+      document.getElementById("languageScreen").style.display = "block";
+
+      const noBtn = document.getElementById("noBtn");
+      noBtn.style.position = "static";
+      noBtn.style.left = "";
+      noBtn.style.top = "";
+    }
+
     function yesClicked() {
       document.getElementById("valentineScreen").innerHTML = `
+        <div class="change-lang" onclick="goBack()">🌍 Change language</div>
         <h2>${translations[currentLang].successTitle}</h2>
         <p>${translations[currentLang].successLine1}</p>
         <p>${translations[currentLang].successLine2}</p>
