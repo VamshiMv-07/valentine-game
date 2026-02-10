@@ -24,13 +24,11 @@
       position: relative;
     }
 
-    /* Floating icons */
     .floating {
       position: absolute;
       pointer-events: none;
       opacity: 0.8;
       animation: floatUp linear infinite;
-      will-change: transform;
     }
 
     @keyframes floatUp {
@@ -38,7 +36,6 @@
       to   { transform: translateY(-130vh) rotate(360deg); }
     }
 
-    /* Card */
     .card {
       position: relative;
       width: min(520px, 92vw);
@@ -50,17 +47,9 @@
       z-index: 5;
     }
 
-    h2 {
-      margin: 0 0 20px;
-      font-size: 30px;
-    }
+    h2 { margin: 0 0 20px; font-size: 30px; }
+    p  { margin: 0 0 20px; font-size: 16px; }
 
-    p {
-      margin: 0 0 20px;
-      font-size: 16px;
-    }
-
-    /* Buttons */
     .btn {
       padding: 14px 28px;
       font-size: 16px;
@@ -68,32 +57,22 @@
       border: none;
       border-radius: 14px;
       cursor: pointer;
-      white-space: nowrap;
-      touch-action: manipulation;
     }
 
-    .primary {
-      background: #ff4d6d;
-      color: white;
-    }
+    .primary   { background: #ff4d6d; color: white; }
+    .secondary { background: #ff8fa3; color: white; }
 
-    .secondary {
-      background: #ff8fa3;
-      color: white;
-    }
-
-    /* Language buttons */
     .lang-btn {
-  background: #ff6b81;   /* same highlight for both */
-  color: white;
-}
+      background: #ff6b81;
+      color: white;
+    }
+
     .lang-buttons {
       display: flex;
       justify-content: center;
       gap: 20px;
     }
 
-    /* Valentine buttons area */
     .button-area {
       position: relative;
       height: 120px;
@@ -103,7 +82,6 @@
       gap: 40px;
     }
 
-    /* Change language link */
     .change-lang {
       position: absolute;
       top: 14px;
@@ -117,22 +95,23 @@
 </head>
 
 <body>
-  <div class="stage" id="stage">
+<div class="stage" id="stage">
 
-    <!-- Language Selection -->
-    <div class="card" id="languageScreen">
-      <h2>Choose your language 🌍</h2>
+  <!-- Language Selection -->
+  <div class="card" id="languageScreen">
+    <h2>Choose your language 🌍</h2>
+    <div class="lang-buttons">
+      <button class="btn lang-btn" onclick="setLanguage('en')">English</button>
+      <button class="btn lang-btn" onclick="setLanguage('tr')">Türkçe</button>
+    </div>
+  </div>
 
-     <div class="lang-buttons">
-  <button class="btn lang-btn" onclick="setLanguage('en')">English</button>
-  <button class="btn lang-btn" onclick="setLanguage('tr')">Türkçe</button>
-</div>
-      </div>
+  <!-- Valentine Screen -->
+  <div class="card" id="valentineScreen" style="display:none;">
+    <div class="change-lang" onclick="goBack()">🌍 Change language</div>
 
-    <!-- Valentine Screen -->
-    <div class="card" id="valentineScreen" style="display:none;">
-      <div class="change-lang" onclick="goBack()">🌍 Change language</div>
-
+    <!-- Question view -->
+    <div id="questionView">
       <h2 id="titleText"></h2>
       <p id="questionText"></p>
 
@@ -141,115 +120,116 @@
         <button id="noBtn" class="btn secondary" onclick="moveNo()"></button>
       </div>
     </div>
+
+    <!-- Success view -->
+    <div id="successView" style="display:none;">
+      <h2 id="successTitle"></h2>
+      <p id="successLine1"></p>
+      <p id="successLine2"></p>
+    </div>
   </div>
+</div>
 
-  <script>
-    /* Translations */
-    const translations = {
-      en: {
-        title: "Quick Question 💭",
-        question: "Will you be my Valentine? 💌",
-        yes: "Yes 💖",
-        no: "No 😳",
-       successTitle: "🎉 Yay!",
-       successLine1: "I’m really glad we’re able to share this moment, and I’m happy you’re in my life 🎆",
-       successLine2: "Happy Valentine’s ❤️"
+<script>
+  const translations = {
+    en: {
+      title: "Quick Question 💭",
+      question: "Will you be my Valentine? 💌",
+      yes: "Yes 💖",
+      no: "No 😳",
+      successTitle: "🎉 Yay!",
+      successLine1: "I’m really glad we’re able to share this moment, and I’m happy you’re in my life 🎆",
+      successLine2: "Happy Valentine’s ❤️"
+    },
+    tr: {
+      title: "Küçük bir soru 💭",
+      question: "Benim Sevgilim olur musun? 💌",
+      yes: "Evet 💖",
+      no: "Hayır 😳",
+      successTitle: "🎉 Yaşasın!",
+      successLine1: "Bu anı paylaşabildiğimiz için gerçekten mutluyum ve hayatımda olmandan memnunum 🎆",
+      successLine2: "Mutlu Sevgililer Günü ❤️"
+    }
+  };
 
-      },
-      tr: {
-        title: "Küçük bir soru 💭",
-        question: "Benim Sevgilim olur musun? 💌",
-        yes: "Evet 💖",
-        no: "Hayır 😳",
-        successTitle: "🎉 Yaşasın!",
-        successLine1: "Bu anı paylaşabildiğimiz için gerçekten mutluyum ve hayatımda olmandan memnunum 🎆",
-        successLine2: "Mutlu Sevgililer Günü ❤️"
+  let currentLang = "en";
+  let chaosStarted = false;
+  let cornerIndex = 0;
 
-      }
-    };
+  function setLanguage(lang) {
+    currentLang = lang;
 
-    let currentLang = "en";
-    let chaosStarted = false;
-    let cornerIndex = 0;
+    languageScreen.style.display = "none";
+    valentineScreen.style.display = "block";
 
-    function setLanguage(lang) {
-      currentLang = lang;
+    questionView.style.display = "block";
+    successView.style.display = "none";
 
-      document.getElementById("languageScreen").style.display = "none";
-      document.getElementById("valentineScreen").style.display = "block";
+    titleText.innerText = translations[lang].title;
+    questionText.innerText = translations[lang].question;
+    yesBtn.innerText = translations[lang].yes;
+    noBtn.innerText = translations[lang].no;
+  }
 
-      document.getElementById("titleText").innerText = translations[lang].title;
-      document.getElementById("questionText").innerText = translations[lang].question;
-      document.getElementById("yesBtn").innerText = translations[lang].yes;
-      document.getElementById("noBtn").innerText = translations[lang].no;
+  function yesClicked() {
+    questionView.style.display = "none";
+    successView.style.display = "block";
+
+    successTitle.innerText  = translations[currentLang].successTitle;
+    successLine1.innerText = translations[currentLang].successLine1;
+    successLine2.innerText = translations[currentLang].successLine2;
+  }
+
+  function goBack() {
+    chaosStarted = false;
+    cornerIndex = 0;
+
+    valentineScreen.style.display = "none";
+    languageScreen.style.display = "block";
+
+    questionView.style.display = "block";
+    successView.style.display = "none";
+
+    noBtn.style.position = "static";
+    noBtn.style.left = "";
+    noBtn.style.top = "";
+  }
+
+  function moveNo() {
+    if (!chaosStarted) {
+      chaosStarted = true;
+      requestAnimationFrame(() => noBtn.style.position = "absolute");
     }
 
-    function goBack() {
-      chaosStarted = false;
-      cornerIndex = 0;
+    const areaRect = buttonArea.getBoundingClientRect();
+    const btnRect = noBtn.getBoundingClientRect();
 
-      document.getElementById("valentineScreen").style.display = "none";
-      document.getElementById("languageScreen").style.display = "block";
+    const positions = [
+      { left: 10, top: 10 },
+      { left: areaRect.width - btnRect.width - 10, top: 10 },
+      { left: 10, top: areaRect.height - btnRect.height - 10 },
+      { left: areaRect.width - btnRect.width - 10, top: areaRect.height - btnRect.height - 10 }
+    ];
 
-      const noBtn = document.getElementById("noBtn");
-      noBtn.style.position = "static";
-      noBtn.style.left = "";
-      noBtn.style.top = "";
+    cornerIndex = (cornerIndex + 1) % positions.length;
+    noBtn.style.left = positions[cornerIndex].left + "px";
+    noBtn.style.top  = positions[cornerIndex].top  + "px";
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const icons = ["🌸","🌼","🌺","🌹","💖","🐱","🧸"];
+    for (let i = 0; i < 48; i++) {
+      const el = document.createElement("div");
+      el.className = "floating";
+      el.textContent = icons[Math.floor(Math.random() * icons.length)];
+      el.style.left = Math.random() * 100 + "%";
+      el.style.top = "110vh";
+      el.style.fontSize = 30 + Math.random() * 12 + "px";
+      el.style.animationDuration = 6 + Math.random() * 4 + "s";
+      el.style.animationDelay = Math.random() * 3 + "s";
+      stage.appendChild(el);
     }
-
-    function yesClicked() {
-      document.getElementById("valentineScreen").innerHTML = `
-        <div class="change-lang" onclick="goBack()">🌍 Change language</div>
-        <h2>${translations[currentLang].successTitle}</h2>
-        <p>${translations[currentLang].successLine1}</p>
-        <p>${translations[currentLang].successLine2}</p>
-      `;
-    }
-
-    function moveNo() {
-      const noBtn = document.getElementById("noBtn");
-      const area = document.getElementById("buttonArea");
-
-      if (!chaosStarted) {
-        chaosStarted = true;
-        requestAnimationFrame(() => {
-          noBtn.style.position = "absolute";
-        });
-      }
-
-      const areaRect = area.getBoundingClientRect();
-      const btnRect = noBtn.getBoundingClientRect();
-
-      const positions = [
-        { left: 10, top: 10 },
-        { left: areaRect.width - btnRect.width - 10, top: 10 },
-        { left: 10, top: areaRect.height - btnRect.height - 10 },
-        { left: areaRect.width - btnRect.width - 10, top: areaRect.height - btnRect.height - 10 }
-      ];
-
-      cornerIndex = (cornerIndex + 1) % positions.length;
-      noBtn.style.left = positions[cornerIndex].left + "px";
-      noBtn.style.top  = positions[cornerIndex].top  + "px";
-    }
-
-    /* Floating icons */
-    document.addEventListener("DOMContentLoaded", () => {
-      const icons = ["🌸","🌼","🌺","🌹","💖","🐱","🧸"];
-      const COUNT = 48;
-      const stage = document.getElementById("stage");
-
-      for (let i = 0; i < COUNT; i++) {
-        const el = document.createElement("div");
-        el.className = "floating";
-        el.textContent = icons[Math.floor(Math.random() * icons.length)];
-        el.style.left = Math.random() * 100 + "%";
-        el.style.top = "110vh";
-        el.style.fontSize = 30 + Math.random() * 12 + "px";
-        el.style.animationDuration = 6 + Math.random() * 4 + "s";
-        el.style.animationDelay = Math.random() * 3 + "s";
-        stage.appendChild(el);
-      }
-    });
-  </script>
+  });
+</script>
 </body>
 </html>
