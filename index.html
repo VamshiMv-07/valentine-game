@@ -2,40 +2,34 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Quick Question 💖</title>
 
   <style>
-    /* ===== Base layout ===== */
     body {
       margin: 0;
       min-height: 100vh;
       font-family: Arial, sans-serif;
       background: linear-gradient(135deg, #ffe0ec, #fff5f9);
       overflow: hidden;
-      -webkit-tap-highlight-color: transparent; /* remove mobile tap flash */
+      -webkit-tap-highlight-color: transparent;
     }
 
+    /* Center stage */
     .stage {
-      position: relative;
       min-height: 100vh;
-      width: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 20px;
-      box-sizing: border-box;
     }
 
-    /* ===== Floating decor ===== */
+    /* Floating decor */
     .floating {
       position: absolute;
       pointer-events: none;
       opacity: 0.75;
-      animation-name: floatUp;
-      animation-timing-function: linear;
-      animation-iteration-count: infinite;
-      will-change: transform;
+      animation: floatUp linear infinite;
     }
 
     @keyframes floatUp {
@@ -43,66 +37,59 @@
       to   { transform: translateY(-15vh) rotate(360deg); }
     }
 
-    /* ===== Card ===== */
+    /* Card */
     .card {
       position: relative;
       width: min(520px, 92vw);
       background: white;
-      padding: 38px 28px 34px;
+      padding: 40px 30px 40px;
       border-radius: 26px;
       text-align: center;
-      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 18px 45px rgba(0,0,0,0.15);
       z-index: 5;
     }
 
     h2 {
-      margin: 0 0 8px;
+      margin: 0 0 10px;
       font-size: 30px;
     }
 
     p {
-      margin: 0 0 16px;
+      margin: 0 0 20px;
       font-size: 16px;
     }
 
-    /* ===== Button area ===== */
-    .button-row {
+    /* Button container */
+    .button-area {
       position: relative;
-      width: 100%;
-      height: 68px; /* a bit taller for mobile taps */
+      height: 120px; /* space for movement */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 40px;
     }
 
     button {
-      position: absolute;
-      top: 0;
-      padding: 14px 26px;
+      padding: 14px 28px;
       font-size: 16px;
       font-weight: 600;
       border: none;
       border-radius: 14px;
       cursor: pointer;
       white-space: nowrap;
-      touch-action: manipulation; /* mobile tap optimization */
+      touch-action: manipulation;
     }
 
     #yesBtn {
-      left: 0;
       background: #ff4d6d;
       color: white;
+      z-index: 2;
     }
 
     #noBtn {
-      right: 0;
-      left: auto;
       background: #ff8fa3;
       color: white;
-    }
-
-    /* ===== Mobile fine-tuning ===== */
-    @media (max-width: 420px) {
-      h2 { font-size: 26px; }
-      p  { font-size: 15px; }
-      button { padding: 14px 22px; }
+      z-index: 2;
     }
   </style>
 </head>
@@ -114,7 +101,7 @@
       <h2>Quick Question 💭</h2>
       <p>Will you be my Valentine? 💌</p>
 
-      <div class="button-row" id="buttonRow">
+      <div class="button-area" id="buttonArea">
         <button id="yesBtn" onclick="yesClicked()">Yes 💖</button>
         <button id="noBtn" onclick="moveNo()">No 😳</button>
       </div>
@@ -122,29 +109,23 @@
   </div>
 
   <script>
-    /* ===== Floating decor generator (more + faster) ===== */
-    (function generateFloaters() {
+    /* Background decor */
+    (function createDecor() {
       const stage = document.getElementById("stage");
       const icons = ["🌸", "🌼", "💐", "🐱", "🧸", "💖"];
-      const count = 20; // plenty, looks lively but not chaotic
-
-      for (let i = 0; i < count; i++) {
-        const el = document.createElement("div");
-        el.className = "floating";
-        el.textContent = icons[Math.floor(Math.random() * icons.length)];
-
-        el.style.left = Math.random() * 96 + "%";
-        el.style.fontSize = 30 + Math.random() * 12 + "px";
-        el.style.animationDuration = 8 + Math.random() * 4 + "s";
-        el.style.animationDelay = Math.random() * 6 + "s";
-
-        stage.appendChild(el);
+      for (let i = 0; i < 24; i++) {
+        const d = document.createElement("div");
+        d.className = "floating";
+        d.textContent = icons[Math.floor(Math.random() * icons.length)];
+        d.style.left = Math.random() * 96 + "%";
+        d.style.fontSize = 30 + Math.random() * 10 + "px";
+        d.style.animationDuration = 7 + Math.random() * 4 + "s";
+        d.style.animationDelay = Math.random() * 6 + "s";
+        stage.appendChild(d);
       }
     })();
 
-    /* ===== Button logic ===== */
-    let chaosStarted = false;
-
+    /* YES */
     function yesClicked() {
       document.getElementById("card").innerHTML = `
         <h1>🎉 Yay!</h1>
@@ -153,47 +134,40 @@
       `;
     }
 
+    /* NO movement logic */
+    const corners = [
+      { x: 10,  y: 10 },   // top-left
+      { x: 330, y: 10 },   // top-right
+      { x: 10,  y: 70 },   // bottom-left
+      { x: 330, y: 70 }    // bottom-right
+    ];
+
+    let cornerIndex = 0;
+    let chaosStarted = false;
+
     function moveNo() {
       const noBtn = document.getElementById("noBtn");
-      const yesBtn = document.getElementById("yesBtn");
-      const row = document.getElementById("buttonRow");
+      const area = document.getElementById("buttonArea");
 
       if (!chaosStarted) {
         chaosStarted = true;
-        noBtn.style.right = "auto"; // prevent expansion bug
+        noBtn.style.position = "absolute";
       }
 
-      const rowRect = row.getBoundingClientRect();
-      const noRect = noBtn.getBoundingClientRect();
-      const yesRect = yesBtn.getBoundingClientRect();
+      const areaRect = area.getBoundingClientRect();
+      const btnRect = noBtn.getBoundingClientRect();
 
-      const yesBox = {
-        x: yesRect.left - rowRect.left,
-        y: yesRect.top - rowRect.top,
-        w: yesRect.width,
-        h: yesRect.height
-      };
+      // Calculate corner relative positions
+      const positions = [
+        { left: 10, top: 10 },
+        { left: areaRect.width - btnRect.width - 10, top: 10 },
+        { left: 10, top: areaRect.height - btnRect.height - 10 },
+        { left: areaRect.width - btnRect.width - 10, top: areaRect.height - btnRect.height - 10 }
+      ];
 
-      const maxX = rowRect.width - noRect.width;
-      const maxY = rowRect.height - noRect.height;
-
-      let x, y, overlap, tries = 0;
-
-      do {
-        x = Math.random() * maxX;
-        y = Math.random() * maxY;
-
-        overlap =
-          x < yesBox.x + yesBox.w &&
-          x + noRect.width > yesBox.x &&
-          y < yesBox.y + yesBox.h &&
-          y + noRect.height > yesBox.y;
-
-        tries++;
-      } while (overlap && tries < 40);
-
-      noBtn.style.left = x + "px";
-      noBtn.style.top  = y + "px";
+      cornerIndex = (cornerIndex + 1) % positions.length;
+      noBtn.style.left = positions[cornerIndex].left + "px";
+      noBtn.style.top  = positions[cornerIndex].top  + "px";
     }
   </script>
 </body>
