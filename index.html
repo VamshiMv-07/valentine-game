@@ -29,14 +29,14 @@
     .floating {
       position: absolute;
       pointer-events: none;
-      opacity: 0.75;
+      opacity: 0.8;
       animation: floatUp linear infinite;
       will-change: transform;
     }
 
     @keyframes floatUp {
-      from { transform: translateY(110vh) rotate(0deg); }
-      to   { transform: translateY(-15vh) rotate(360deg); }
+      from { transform: translateY(0) rotate(0deg); }
+      to   { transform: translateY(-130vh) rotate(360deg); }
     }
 
     /* Card */
@@ -64,7 +64,7 @@
     /* Button container */
     .button-area {
       position: relative;
-      height: 120px; /* space for movement */
+      height: 120px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -110,27 +110,29 @@
   </div>
 
   <script>
-    /* ===== Run setup ONLY after DOM is ready ===== */
+    /* ===== Create LOTS of floating icons (4x) ===== */
     document.addEventListener("DOMContentLoaded", () => {
-      createDecor();
-    });
-
-    /* Background decor */
-    function createDecor() {
       const stage = document.getElementById("stage");
-      const icons = ["🌸", "🌼", "💐", "🐱", "🧸", "💖"];
 
-      for (let i = 0; i < 24; i++) {
-        const d = document.createElement("div");
-        d.className = "floating";
-        d.textContent = icons[Math.floor(Math.random() * icons.length)];
-        d.style.left = Math.random() * 96 + "%";
-        d.style.fontSize = 30 + Math.random() * 10 + "px";
-        d.style.animationDuration = 7 + Math.random() * 4 + "s";
-        d.style.animationDelay = Math.random() * 6 + "s";
-        stage.appendChild(d);
+      const icons = ["🌸", "🌼", "🌺", "🌹", "💖", "🐱", "🧸"];
+      const COUNT = 48; // 4x density (was ~12 before)
+
+      for (let i = 0; i < COUNT; i++) {
+        const el = document.createElement("div");
+        el.className = "floating";
+        el.textContent = icons[Math.floor(Math.random() * icons.length)];
+
+        // Start BELOW the screen so animation is immediate
+        el.style.left = Math.random() * 100 + "%";
+        el.style.top = "110vh";
+
+        el.style.fontSize = 30 + Math.random() * 12 + "px";
+        el.style.animationDuration = 6 + Math.random() * 4 + "s"; // faster
+        el.style.animationDelay = Math.random() * 3 + "s";       // slight stagger
+
+        stage.appendChild(el);
       }
-    }
+    });
 
     /* YES */
     function yesClicked() {
@@ -141,7 +143,7 @@
       `;
     }
 
-    /* NO movement logic */
+    /* NO movement logic (corner zig-zag) */
     let cornerIndex = 0;
     let chaosStarted = false;
 
@@ -151,8 +153,6 @@
 
       if (!chaosStarted) {
         chaosStarted = true;
-
-        /* 🔑 Delay layout mutation to next frame */
         requestAnimationFrame(() => {
           noBtn.style.position = "absolute";
         });
