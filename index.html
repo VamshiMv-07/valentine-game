@@ -15,7 +15,6 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* Center stage */
     .stage {
       min-height: 100vh;
       display: flex;
@@ -25,7 +24,7 @@
       position: relative;
     }
 
-    /* Floating decor */
+    /* Floating icons */
     .floating {
       position: absolute;
       pointer-events: none;
@@ -44,7 +43,7 @@
       position: relative;
       width: min(520px, 92vw);
       background: white;
-      padding: 40px 30px 40px;
+      padding: 40px 30px;
       border-radius: 26px;
       text-align: center;
       box-shadow: 0 18px 45px rgba(0,0,0,0.15);
@@ -61,7 +60,6 @@
       font-size: 16px;
     }
 
-    /* Button container */
     .button-area {
       position: relative;
       height: 120px;
@@ -82,70 +80,98 @@
       touch-action: manipulation;
     }
 
-    #yesBtn {
+    .primary {
       background: #ff4d6d;
       color: white;
-      z-index: 2;
     }
 
-    #noBtn {
+    .secondary {
       background: #ff8fa3;
       color: white;
-      z-index: 2;
+    }
+
+    /* Language selector */
+    .lang-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
     }
   </style>
 </head>
 
 <body>
   <div class="stage" id="stage">
-    <div class="card" id="card">
-      <h2>Quick Question 💭</h2>
-      <p>Will you be my Valentine? 💌</p>
+
+    <!-- Language Selection -->
+    <div class="card" id="languageScreen">
+      <h2>Choose your language 🌍</h2>
+      <p>Dilinizi seçin</p>
+
+      <div class="lang-buttons">
+        <button class="primary" onclick="setLanguage('en')">English 🇬🇧</button>
+        <button class="secondary" onclick="setLanguage('tr')">Türkçe 🇹🇷</button>
+      </div>
+    </div>
+
+    <!-- Valentine Screen (hidden initially) -->
+    <div class="card" id="valentineScreen" style="display:none;">
+      <h2 id="titleText"></h2>
+      <p id="questionText"></p>
 
       <div class="button-area" id="buttonArea">
-        <button id="yesBtn" onclick="yesClicked()">Yes 💖</button>
-        <button id="noBtn" onclick="moveNo()">No 😳</button>
+        <button id="yesBtn" class="primary" onclick="yesClicked()"></button>
+        <button id="noBtn" class="secondary" onclick="moveNo()"></button>
       </div>
     </div>
   </div>
 
   <script>
-    /* ===== Create LOTS of floating icons (4x) ===== */
-    document.addEventListener("DOMContentLoaded", () => {
-      const stage = document.getElementById("stage");
-
-      const icons = ["🌸", "🌼", "🌺", "🌹", "💖", "🐱", "🧸"];
-      const COUNT = 48; // 4x density (was ~12 before)
-
-      for (let i = 0; i < COUNT; i++) {
-        const el = document.createElement("div");
-        el.className = "floating";
-        el.textContent = icons[Math.floor(Math.random() * icons.length)];
-
-        // Start BELOW the screen so animation is immediate
-        el.style.left = Math.random() * 100 + "%";
-        el.style.top = "110vh";
-
-        el.style.fontSize = 30 + Math.random() * 12 + "px";
-        el.style.animationDuration = 6 + Math.random() * 4 + "s"; // faster
-        el.style.animationDelay = Math.random() * 3 + "s";       // slight stagger
-
-        stage.appendChild(el);
+    /* Translations */
+    const translations = {
+      en: {
+        title: "Quick Question 💭",
+        question: "Will you be my Valentine? 💌",
+        yes: "Yes 💖",
+        no: "No 😳",
+        successTitle: "🎉 Yay!",
+        successLine1: "This just got very cute 😊",
+        successLine2: "Happy Valentine’s 💐"
+      },
+      tr: {
+        title: "Küçük bir soru 💭",
+        question: "Benim Sevgilim olur musun? 💌",
+        yes: "Evet 💖",
+        no: "Hayır 😳",
+        successTitle: "🎉 Yaşasın!",
+        successLine1: "Bu gerçekten çok tatlı oldu 😊",
+        successLine2: "Mutlu Sevgililer Günü 💐"
       }
-    });
+    };
 
-    /* YES */
-    function yesClicked() {
-      document.getElementById("card").innerHTML = `
-        <h1>🎉 Yay!</h1>
-        <p>This just got very cute 😊</p>
-        <p>Happy Valentine’s 💐</p>
-      `;
+    let currentLang = "en";
+    let chaosStarted = false;
+    let cornerIndex = 0;
+
+    function setLanguage(lang) {
+      currentLang = lang;
+
+      document.getElementById("languageScreen").style.display = "none";
+      document.getElementById("valentineScreen").style.display = "block";
+
+      document.getElementById("titleText").innerText = translations[lang].title;
+      document.getElementById("questionText").innerText = translations[lang].question;
+      document.getElementById("yesBtn").innerText = translations[lang].yes;
+      document.getElementById("noBtn").innerText = translations[lang].no;
     }
 
-    /* NO movement logic (corner zig-zag) */
-    let cornerIndex = 0;
-    let chaosStarted = false;
+    function yesClicked() {
+      document.getElementById("valentineScreen").innerHTML = `
+        <h2>${translations[currentLang].successTitle}</h2>
+        <p>${translations[currentLang].successLine1}</p>
+        <p>${translations[currentLang].successLine2}</p>
+      `;
+    }
 
     function moveNo() {
       const noBtn = document.getElementById("noBtn");
@@ -169,10 +195,28 @@
       ];
 
       cornerIndex = (cornerIndex + 1) % positions.length;
-
       noBtn.style.left = positions[cornerIndex].left + "px";
       noBtn.style.top  = positions[cornerIndex].top  + "px";
     }
+
+    /* Floating icons */
+    document.addEventListener("DOMContentLoaded", () => {
+      const icons = ["🌸","🌼","🌺","🌹","💖","🐱","🧸"];
+      const COUNT = 48;
+      const stage = document.getElementById("stage");
+
+      for (let i = 0; i < COUNT; i++) {
+        const el = document.createElement("div");
+        el.className = "floating";
+        el.textContent = icons[Math.floor(Math.random() * icons.length)];
+        el.style.left = Math.random() * 100 + "%";
+        el.style.top = "110vh";
+        el.style.fontSize = 30 + Math.random() * 12 + "px";
+        el.style.animationDuration = 6 + Math.random() * 4 + "s";
+        el.style.animationDelay = Math.random() * 3 + "s";
+        stage.appendChild(el);
+      }
+    });
   </script>
 </body>
 </html>
